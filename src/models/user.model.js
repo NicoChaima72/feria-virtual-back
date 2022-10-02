@@ -17,7 +17,6 @@ class User {
 
     switch (role_id) {
       case 2:
-      case 4:
         this.rut = args[11];
         this.business_name = args[12];
         this.region = args[13];
@@ -50,6 +49,23 @@ class User {
           expired_at: args[22],
         };
         break;
+      case 4:
+        this.rut = args[11];
+        this.business_name = args[12];
+        this.region = args[13];
+        this.commune = args[14];
+        this.street = args[15];
+        this.observations = args[16];
+        this.direction_url = args[17];
+        this.phone = args[18];
+        this.contract_id = args[9];
+        this.Contract = {
+          id: args[19],
+          created_at: args[20],
+          expired_at: args[21],
+        };
+        this.fruits_vegetables = args[23] ? args[23].split(",") : [];
+        break;
       case 5:
         this.type_id = args[11];
         this.rut = args[12];
@@ -76,7 +92,10 @@ class User {
       p_role_id: role_id,
     });
 
-    return users.map((user) => new User(role_id, user));
+
+    users = users.map((user) => new User(role_id, user));
+
+    return users;
   }
 
   static async getByEmail(email) {
@@ -97,10 +116,8 @@ class User {
     if (!user[0]) return null;
 
     user = new User(user[0][5], user[0]);
+
     return user;
-    if (!role) return user;
-    if (role == user.role_id) return user;
-    return null;
   }
 
   static async createAdminAndConsultant(name, email, password, role_id) {
@@ -416,22 +433,6 @@ class User {
     contract_expired_at
   ) {
     const user = this;
-    console.log({
-      user: {
-        p_id: user.id,
-        p_name: name,
-        p_rut: rut,
-        p_business_name: business_name,
-        p_country: country,
-        p_region: region,
-        p_commune: commune,
-        p_street: street,
-        p_observations: observations,
-        p_direction_url: direction_url,
-        p_phone: phone,
-        p_contract_expired_at: contract_expired_at,
-      },
-    });
     let sql =
       "EDIT_EXTERNAL_USER(:p_id, :p_name, :p_rut, :p_business_name, :p_country, :p_region, :p_commune, :p_street, :p_observations, :p_direction_url, :p_phone, :p_contract_expired_at)";
     const result = await BD.execute(sql, {
@@ -527,6 +528,19 @@ class User {
     });
 
     return new User(user.role_id, result[0]);
+  }
+
+  async getFruitsAndVegetables() {
+    const user = this;
+    let sql = "GET_FRUITS_VEGETABLES_BY_PRODUCER(:p_producer_id)";
+    const result = await BD.execute(sql, {
+      p_producer_id: user.id,
+    });
+
+    console.log(result);
+
+    // TODO: Ver aqui;
+    return [];
   }
 }
 

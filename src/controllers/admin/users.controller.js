@@ -153,6 +153,12 @@ module.exports = {
       fruits_vegetables,
     } = req.body;
 
+    const emailExist = await User.getByEmail(email);
+    if (emailExist)
+      return res
+        .status(400)
+        .json(responseErrorField("email", "El email ya está registrado"));
+
     const password = uniqid();
     const user = await User.createProducer(
       name,
@@ -168,12 +174,6 @@ module.exports = {
       phone,
       contract_expired_at
     );
-
-    const emailExist = await User.getByEmail(email);
-    if (emailExist)
-      return res
-        .status(400)
-        .json(responseErrorField("email", "El email ya está registrado"));
 
     if (!user)
       return res.status(400).json({
@@ -243,7 +243,6 @@ module.exports = {
         .status(400)
         .json({ ok: false, err: { message: "El usuario no existe" } });
 
-    console.log({ user: user.role_id, role_id });
     if (user.role_id != role_id)
       return res
         .status(400)
