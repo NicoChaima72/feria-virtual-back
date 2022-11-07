@@ -92,7 +92,6 @@ class User {
       p_role_id: role_id,
     });
 
-
     users = users.map((user) => new User(role_id, user));
 
     return users;
@@ -123,7 +122,7 @@ class User {
   static async createAdminAndConsultant(name, email, password, role_id) {
     // TODO: Cambiar
     // password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-    password = bcrypt.hashSync("207229865", bcrypt.genSaltSync(10));
+    password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
     let sql = `ADD_USER(:p_name, :p_email, :p_password, :p_role_id)`;
 
@@ -541,6 +540,42 @@ class User {
 
     // TODO: Ver aqui;
     return [];
+  }
+
+  async getDashboardData() {
+    let data = {};
+    let result = await BD.execute("DASHBOARD_ADMIN_DATA()");
+    result = result[0];
+    console.log(result);
+    data["data"] = {
+      admin_count: result[0],
+      local_count: result[1],
+      external_count: result[2],
+      producer_count: result[3],
+      transportist_count: result[4],
+      contracts_expired: result[5],
+      users_down: result[6],
+      fruits_vegetables_count: result[7],
+    };
+
+    result = await BD.execute("DASHBOARD_ADMIN_LAST_SALES()");
+    data["last_sales"] = result.map((r) => ({
+      id: r[0],
+      created_at: r[1],
+      price: r[2],
+      client: r[3],
+    }));
+
+    result = await BD.execute("DASHBOARD_ADMIN_USERS_SALES_COUNT()");
+    data['users_sales'] = result.map((r) => ({
+      id: r[0],
+      name: r[1],
+      rut: r[2],
+      business_name: r[3],
+      count: r[4],  
+    }));
+
+    return data;
   }
 }
 

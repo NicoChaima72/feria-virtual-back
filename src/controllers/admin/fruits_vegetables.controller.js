@@ -4,7 +4,6 @@ const FruitVegetable = require("../../models/fruit_vegetable.model");
 module.exports = {
   index: async (req, res) => {
     const fruitsVegetables = await FruitVegetable.getAll();
-    console.log(fruitsVegetables);
     return res.json({ ok: true, fruitsVegetables: fruitsVegetables });
   },
   store: async (req, res) => {

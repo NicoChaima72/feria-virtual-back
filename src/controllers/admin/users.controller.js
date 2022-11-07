@@ -355,8 +355,6 @@ module.exports = {
       contract_expired_at,
     } = req.body;
 
-    // console.log();
-
     const user = await User.getById(user_id);
 
     if (!user)
